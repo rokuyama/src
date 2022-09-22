@@ -63,7 +63,6 @@
 #define	NXSEGPG		(1 << XSEGLENGTH)
 #define	NSEGPG		(1 << SEGLENGTH)
 
-
 #ifndef __BSD_PTENTRY_T__
 #define	__BSD_PTENTRY_T__
 #define	PRIxPTE         PRIx64
@@ -89,7 +88,6 @@ do {							\
 struct pmap_md {
 	paddr_t			pmd_l0_pa;
 };
-
 #define	pm_l0_pa	pm_md.pmd_l0_pa
 
 void pmap_md_pdetab_init(struct pmap *);
@@ -162,9 +160,18 @@ void	pmap_md_xtab_deactivate(pmap_t);
 vaddr_t pmap_md_direct_map_paddr(paddr_t);
 
 
+
+
+vaddr_t pmap_md_direct_map_paddr(paddr_t);
+
+#ifdef PMAP_CACHE_VIPT
+#define	PMAP_VIRTUAL_CACHE_ALIASES
+#endif
+
 #ifdef MULTIPROCESSOR
 #define	PMAP_NO_PV_UNCACHED
 #endif
+
 
 static inline void
 pmap_md_init(void)
@@ -184,14 +191,22 @@ pmap_md_tlb_check_entry(void *ctx, vaddr_t va, tlb_asid_t asid, pt_entry_t pte)
 static inline bool
 pmap_md_virtual_cache_aliasing_p(void)
 {
+#if defined(PMAP_CACHE_VIPT)
+	return true;
+#else
 	return false;
+#endif
 }
 
 
 static inline vsize_t
 pmap_md_cache_prefer_mask(void)
 {
+#if defined(PMAP_CACHE_VIPT)
+	return arm_cache_prefer_mask;
+#else
 	return 0;
+#endif
 }
 
 
@@ -205,6 +220,7 @@ pmap_md_nptep(pt_entry_t *ptep)
 #endif	/* __PMAP_PRIVATE */
 
 #ifdef __PMAP_PRIVATE
+
 static __inline paddr_t
 pte_to_paddr(pt_entry_t pte)
 {
@@ -221,10 +237,29 @@ pte_valid_p(pt_entry_t pte)
 }
 
 
+static inline int
+pmap_md_pagecolor(struct vm_page *pg)
+{
+	struct vm_page_md * const mdpg = VM_PAGE_TO_MD(pg);
+	pv_entry_t pv = &mdpg->mdpg_first;
+
+	return pv->pv_va;
+}
+
+
 static inline void
 pmap_md_clean_page(struct vm_page_md *md, bool is_src)
 {
 }
+
+
+static inline size_t
+pte_index(vaddr_t va)
+{
+
+	return l3pte_index(va);
+}
+
 
 
 static inline bool
@@ -267,11 +302,20 @@ pte_value(pt_entry_t pte)
 }
 
 static inline bool
+pte_readonly_p(pt_entry_t pte)
+{
+
+	return !l3pte_writable(pte);
+}
+
+
+static inline bool
 pte_cached_p(pt_entry_t pte)
 {
 
 	return ((pte & LX_BLKPAG_ATTR_MASK) == LX_BLKPAG_ATTR_NORMAL_WB);
 }
+
 
 static inline bool
 pte_deferred_exec_p(pt_entry_t pte)
@@ -279,6 +323,7 @@ pte_deferred_exec_p(pt_entry_t pte)
 
 	return false;
 }
+
 
 static inline pt_entry_t
 pte_nv_entry(bool kernel_p)
@@ -390,7 +435,6 @@ pte_pde_set(pd_entry_t *pdep, pd_entry_t npde)
 }
 
 
-
 static inline pt_entry_t
 pte_memattr(u_int flags)
 {
@@ -453,7 +497,7 @@ pte_make_enter_efirt(paddr_t pa, vm_prot_t prot, u_int flags)
 #endif
 	    | L3_TYPE_PAG
 	    | LX_BLKPAG_AF
-	    | LX_BLKPAG_NG /* | LX_BLKPAG_APUSER */
+	    | LX_BLKPAG_NG
 	    | LX_BLKPAG_UXN | LX_BLKPAG_PXN
 	    | (((prot) & (VM_PROT_READ | VM_PROT_WRITE)) == VM_PROT_READ ? LX_BLKPAG_AP_RO : LX_BLKPAG_AP_RW);
 

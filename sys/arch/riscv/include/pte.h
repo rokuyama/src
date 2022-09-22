@@ -90,6 +90,11 @@ typedef uint32_t pd_entry_t;
 #define	PTE_TO_PA(pte)	(((pte) >> PTE_PPN_SHIFT) << PAGE_SHIFT)
 
 
+static inline const size_t
+pte_index(vaddr_t va)
+{
+	return ((va >> PGSHIFT) & (NPTEPG - 1));
+}
 
 static inline bool
 pte_valid_p(pt_entry_t pte)

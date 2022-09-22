@@ -32,6 +32,8 @@
 #include <sys/cdefs.h>
 __KERNEL_RCSID(0, "$NetBSD: efi_machdep.c,v 1.13 2022/05/03 20:10:20 skrll Exp $");
 
+#include "opt_efi.h"
+
 #include <sys/param.h>
 
 #include <uvm/uvm_extern.h>

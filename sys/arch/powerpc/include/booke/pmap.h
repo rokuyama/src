@@ -142,6 +142,32 @@ pmap_md_vca_clean(struct vm_page_md *mdpg, vaddr_t va, int op)
 {
 }
 
+static inline bool
+pmap_md_kernel_vaddr_p(vaddr_t va)
+{
+	return false;
+}
+
+static inline paddr_t
+pmap_md_kernel_vaddr_to_paddr(vaddr_t vax)
+{
+	/* Not used due to false from pmap_md_kernel_vaddr_p */
+
+	return 0;
+}
+
+static inline size_t
+pte_index(vaddr_t va)
+{
+	return ((va >> PGSHIFT) & (NPTEPG - 1));
+}
+
+static inline pt_entry_t *
+pmap_md_nptep(pt_entry_t *ptep)
+{
+        return ptep + 1;
+}
+
 static __inline size_t
 pmap_md_tlb_asid_max(void)
 {

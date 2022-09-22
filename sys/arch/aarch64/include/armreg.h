@@ -924,7 +924,6 @@ AARCH64REG_WRITE_INLINE(spsr_el1)
 AARCH64REG_READ_INLINE(tcr_el1)		// Translation Control Register
 AARCH64REG_WRITE_INLINE(tcr_el1)
 
-
 /* TCR_EL1 - Translation Control Register */
 #define TCR_TCMA1		__BIT(58)		/* ARMv8.5-MemTag control when ADDR[59:55] = 0b11111 */
 #define TCR_TCMA0		__BIT(57)		/* ARMv8.5-MemTag control when ADDR[59:55] = 0b00000 */
@@ -998,6 +997,10 @@ AARCH64REG_WRITE_INLINE(tcr_el1)
 #define  TCR_IRGN0_WB		__SHIFTIN(3,TCR_IRGN0)	/* WriteBack */
 #define TCR_EPD0		__BIT(7)		/* Walk Disable for TTBR0 */
 #define TCR_T0SZ		__BITS(5,0)		/* Size offset for TTBR0_EL1 */
+
+//XXXNH pte.h?
+#define TCR_PAGE_SIZE1(tcr)	(1L << ((1L << __SHIFTOUT(tcr, TCR_TG1)) + 8))
+
 
 AARCH64REG_READ_INLINE(tpidr_el1)	// Thread ID Register (EL1)
 AARCH64REG_WRITE_INLINE(tpidr_el1)

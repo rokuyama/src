@@ -206,13 +206,22 @@ CTASSERT(PMAP_ASID_RESERVED == 0);
 #ifdef _LP64
 pmap_pdetab_t	pmap_kstart_pdetab PMAP_PDETAB_ALIGN; /* first mid-level pdetab for kernel */
 #endif
-pmap_pdetab_t	pmap_kern_pdetab PMAP_PDETAB_ALIGN;
+pmap_pdetab_t	pmap_kern_pdetab PMAP_PDETAB_ALIGN = { /* top level pdetab for kernel */
+#if 0
+need VA -> pd_entry routine
+#ifdef _LP64
+	.pde_pde[(VM_MIN_KERNEL_ADDRESS >> XSEGSHIFT) & (NBSEGPG - 1)] = &pmap_kstart_pdetab,
+#endif
+#endif
+};
+
 #endif
 
 #if !defined(PMAP_HWPAGEWALKER) || !defined(PMAP_MAP_PDETABPAGE)
 #ifndef PMAP_SEGTAB_ALIGN
 #define PMAP_SEGTAB_ALIGN	/* nothing */
 #endif
+
 #ifdef _LP64
 pmap_segtab_t	pmap_kstart_segtab PMAP_SEGTAB_ALIGN; /* first mid-level segtab for kernel */
 #endif
@@ -649,6 +658,7 @@ pmap_bootstrap_common(void)
 	uvm_obj_init(&pm->pm_uobject, &pmap_pager, false, 1);
 	uvm_obj_setlock(&pm->pm_uobject, &pm->pm_obj_lock);
 
+//	TAILQ_INIT(&pmap->pm_pvp_list);
 	TAILQ_INIT(&pm->pm_ppg_list);
 
 #if defined(PMAP_HWPAGEWALKER)
@@ -755,6 +765,7 @@ pmap_create(void)
 	uvm_obj_init(&pmap->pm_uobject, &pmap_pager, false, 1);
 	uvm_obj_setlock(&pmap->pm_uobject, &pmap->pm_obj_lock);
 
+//	TAILQ_INIT(&pmap->pm_pvp_list);
 	TAILQ_INIT(&pmap->pm_ppg_list);
 #if defined(PMAP_HWPAGEWALKER)
 	TAILQ_INIT(&pmap->pm_pdetab_list);
@@ -1110,7 +1121,7 @@ pmap_pte_remove(pmap_t pmap, vaddr_t sva, vaddr_t eva, pt_entry_t *ptep,
 
 	KASSERT(kpreempt_disabled());
 
-	for (; sva < eva; sva += NBPG, ptep++) {
+	for (; sva < eva; sva += NBPG, ptep = pmap_md_nptep(ptep)) {
 		const pt_entry_t pte = *ptep;
 		if (!pte_valid_p(pte))
 			continue;
@@ -1255,7 +1266,8 @@ pmap_pte_protect(pmap_t pmap, vaddr_t sva, vaddr_t eva, pt_entry_t *ptep,
 	/*
 	 * Change protection on every valid mapping within this segment.
 	 */
-	for (; sva < eva; sva += NBPG, ptep++) {
+
+	for (; sva < eva; sva += NBPG, ptep = pmap_md_nptep(ptep)) {
 		pt_entry_t pte = *ptep;
 		if (!pte_valid_p(pte))
 			continue;
@@ -1646,7 +1658,7 @@ pmap_pte_kremove(pmap_t pmap, vaddr_t sva, vaddr_t eva, pt_entry_t *ptep,
 
 	KASSERT(kpreempt_disabled());
 
-	for (; sva < eva; sva += NBPG, ptep++) {
+	for (; sva < eva; sva += NBPG, ptep = pmap_md_nptep(ptep)) {
 		pt_entry_t pte = *ptep;
 		if (!pte_valid_p(pte))
 			continue;
@@ -1781,6 +1793,10 @@ pmap_extract(pmap_t pmap, vaddr_t va, paddr_t *pap)
 	paddr_t pa;
 
 	if (pmap == pmap_kernel()) {
+		if (pmap_md_kernel_vaddr_p(va)) {
+			pa = pmap_md_kernel_vaddr_to_paddr(va);
+			goto done;
+		}
 		if (pmap_md_direct_mapped_vaddr_p(va)) {
 			pa = pmap_md_direct_mapped_vaddr_to_paddr(va);
 			goto done;
@@ -2145,6 +2161,7 @@ again:
  * Flush the cache if the last page is removed (should always be cached
  * at this point).
  */
+//XXXNH
 void
 pmap_remove_pv(pmap_t pmap, vaddr_t va, struct vm_page *pg, bool dirty)
 {

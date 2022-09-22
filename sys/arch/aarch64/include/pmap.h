@@ -65,7 +65,6 @@
 #else
 #define	cpu_tlb_info(ci)		(&pmap_tlb0_info)
 #endif
-
 static inline tlb_asid_t
 pmap_md_tlb_asid_max(void)
 {
@@ -252,6 +251,9 @@ void pmap_db_pteinfo(vaddr_t, void (*)(const char *, ...) __printflike(1, 2));
 void pmap_db_ttbrdump(bool, vaddr_t, void (*)(const char *, ...) __printflike(1, 2));
 #endif
 
+/*
+ * XXXNH Maybe drop BOOT
+ */
 #define LX_BLKPAG_OS_WIRED		LX_BLKPAG_OS_2
 #define LX_BLKPAG_OS_BOOT		LX_BLKPAG_OS_3
 
