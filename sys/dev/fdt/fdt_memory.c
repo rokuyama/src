@@ -110,15 +110,16 @@ fdt_memory_remove_reserved(uint64_t min_addr, uint64_t max_addr)
 {
 	uint64_t lstart = 0, lend = 0;
 	int index, error, phandle, child;
+	const void *fdt_data = fdtbus_get_data();
+	const int num = fdt_num_mem_rsv(fdt_data);
 
-	const int num = fdt_num_mem_rsv(fdtbus_get_data());
 	for (index = 0; index <= num; index++) {
 		uint64_t addr, size;
 
-		error = fdt_get_mem_rsv(fdtbus_get_data(), index,
-		    &addr, &size);
+		error = fdt_get_mem_rsv(fdt_data, index, &addr, &size);
 		if (error != 0)
 			continue;
+
 		if (lstart <= addr && addr <= lend) {
 			size -= (lend - addr);
 			addr = lend;
@@ -150,6 +151,11 @@ fdt_memory_remove_reserved(uint64_t min_addr, uint64_t max_addr)
 			bus_addr_t addr;
 			bus_size_t size;
 
+			// XXXNH need to skip "no-map" areas too
+#if 0
+			if (!of_hasprop(child, "no-map"))
+				continue;
+#endif
 			if (fdtbus_get_reg(child, 0, &addr, &size) != 0)
 				continue;
 			if (size == 0)
