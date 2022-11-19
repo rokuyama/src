@@ -133,11 +133,14 @@ __lwp_getprivate_fast(void)
 	return __tp;
 }
 
+// XXXNH not sure this text is 100% correct.
 /*
  * On RISCV, since displacements are signed 12-bit values, the TCB Pointer
  * is biased by sizeof(tcb) so that first thread datum can be addressed by
  * -sizeof(tcb).
  */
+
+// XXXNH does the CTASSERT make sense?
 
 #define	TLS_TP_OFFSET	0x0
 #define	TLS_TCB_ALIGN	16

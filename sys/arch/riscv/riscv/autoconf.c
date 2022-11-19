@@ -44,12 +44,25 @@ __RCSID("$NetBSD: autoconf.c,v 1.4 2023/05/07 12:41:48 skrll Exp $");
 
 #include <machine/sysreg.h>
 
+//XXXNH
+extern struct cfdata cfdata[];
+
 void
 cpu_configure(void)
 {
-	(void) splhigh();
+	(void)splhigh();
 
 	config_rootfound("mainbus", NULL);
+
+#if 0
+	// XXXNH is this really needed? FDT vs ACPI?
+	for (struct cfdata *cf = &cfdata[0]; cf->cf_name; cf++) {
+		if (cf->cf_pspec == NULL) {
+			if (config_rootfound(cf->cf_name, NULL) != NULL)
+				break;
+		}
+	}
+#endif
 
 	/* Time to start taking interrupts so lets open the flood gates ... */
 	spl0();

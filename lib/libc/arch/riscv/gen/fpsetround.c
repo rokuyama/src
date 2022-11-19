@@ -47,5 +47,6 @@ __weak_alias(fpsetround,_fpsetround)
 fp_rnd
 fpsetround(fp_rnd rnd_dir)
 {
+	//XXXNH
 	return __SHIFTOUT(fcsr_frm_write(__SHIFTIN(rnd_dir, FCSR_FRM)), FCSR_FRM);
 }

@@ -152,6 +152,8 @@ clint_match(device_t parent, cfdata_t cf, void *aux)
 {
 	struct fdt_attach_args * const faa = aux;
 
+	// XXXNH check SBI and return 0...
+
 	return of_compatible_match(faa->faa_phandle, compat_data);
 }
 

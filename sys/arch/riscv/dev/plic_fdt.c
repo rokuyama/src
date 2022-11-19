@@ -149,6 +149,7 @@ plic_fdt_attach(device_t parent, device_t self, void *aux)
 		    sc->sc_ndev);
 		return;
 	}
+	// XXXNH ?
 	aprint_verbose("\n");
 
 	/*
@@ -194,6 +195,7 @@ plic_fdt_attach(device_t parent, device_t self, void *aux)
 				    "interrupt handler\n");
 			} else {
 				char intrstr[128];
+				// XXXNH s/context/intr_source/ ?
 				bool ok = fdtbus_intr_str(phandle, context,
 				    intrstr, sizeof(intrstr));
 				aprint_verbose_dev(self, "interrupt %s handler "

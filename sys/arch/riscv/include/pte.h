@@ -125,6 +125,7 @@ pte_deferred_exec_p(pt_entry_t pte)
 static inline pt_entry_t
 pte_wire_entry(pt_entry_t pte)
 {
+	//XXXNH is PTE_HARDWIRED right here?!?
 	return pte | PTE_HARDWIRED | PTE_WIRED;
 }
 
@@ -216,6 +217,14 @@ pte_make_enter(paddr_t pa, struct vm_page_md *mdpg, vm_prot_t prot,
 			*/
 			pte |= PTE_A;
 		}
+#if 0
+		// do these need to check prot? (cf. aa64)
+//		KASSERT((prot & VM_PROT_WRITE));
+		if (VM_PAGEMD_REFERENCED_P(mdpg))
+			pte |= PTE_A;
+		if (VM_PAGEMD_MODIFIED_P(mdpg))
+			pte |= PTE_D;
+#endif
 	} else {
 		pte |= PTE_A | PTE_D;
 	}

@@ -32,6 +32,9 @@
 
 #define _RISCV_BUS_DMA_PRIVATE
 
+//#include "opt_riscv_bus_space.h"
+//#include "opt_cputypes.h"
+
 #include <sys/cdefs.h>
 __KERNEL_RCSID(0, "$NetBSD: bus_dma.c,v 1.1 2023/05/07 12:41:48 skrll Exp $");
 
@@ -1401,6 +1404,20 @@ _bus_dmamem_map(bus_dma_tag_t t, bus_dma_segment_t *segs, int nsegs,
 			}
 		}
 
+// XXXNH delete PMAP_NEED_ALLOC_POOLPAGE (failed experiment)
+#ifdef PMAP_NEED_ALLOC_POOLPAGE
+		/*
+		 * The page can only be direct mapped if was allocated out
+		 * of the poolpage vm freelist.
+		 */
+		uvm_physseg_t upm = uvm_physseg_find(atop(pa), NULL);
+		KASSERT(uvm_physseg_valid_p(upm));
+		if (direct_mapable) {
+			// XXXNH
+			direct_mapable = pmap_md_direct_mapped_vaddr_p(MAP_MAP_POOLPAGE(pa));
+		}
+#endif
+
 		if (direct_mapable) {
 			*kvap = (void *)PMAP_MAP_POOLPAGE(pa);
 #ifdef DEBUG_DMA
@@ -1525,6 +1542,33 @@ paddr_t
 _bus_dmamem_mmap(bus_dma_tag_t t, bus_dma_segment_t *segs, int nsegs,
     off_t off, int prot, int flags)
 {
+#if 0
+	paddr_t map_flags;
+	int i;
+
+	for (i = 0; i < nsegs; i++) {
+		KASSERTMSG((off & PAGE_MASK) == 0,
+		    "off %#jx (%#x)", (uintmax_t)off, (int)off & PAGE_MASK);
+		KASSERTMSG((segs[i].ds_addr & PAGE_MASK) == 0,
+		    "ds_addr %#" PRIxBUSADDR " (%#" PRIxBUSADDR ")",
+		    segs[i].ds_addr, segs[i].ds_addr & PAGE_MASK);
+		KASSERTMSG((segs[i].ds_len & PAGE_MASK) == 0,
+		    "ds_len %#" PRIxBUSSIZE " (%#" PRIxBUSSIZE ")",
+		    segs[i].ds_len, segs[i].ds_len & PAGE_MASK);
+		if (off >= segs[i].ds_len) {
+			off -= segs[i].ds_len;
+			continue;
+		}
+
+		map_flags = 0;
+//		if (flags & BUS_DMA_PREFETCHABLE)
+//			map_flags |= RISCV_MMAP_WRITECOMBINE;
+
+
+		return riscv_btop((u_long)segs[i].ds_addr + off) | map_flags;
+
+	}
+#endif
 	/* Page not found. */
 	return -1;
 }

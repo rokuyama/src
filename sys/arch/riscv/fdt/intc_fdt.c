@@ -117,7 +117,21 @@ intc_intr_establish(struct intc_fdt_softc *sc, u_int source, u_int ipl,
 		irq->intr_istflags = istflags;
 		irq->intr_source = source;
 		TAILQ_INIT(&irq->intr_handlers);
+// 		if (arg == NULL) {
+// 			irq->intr_ih = intr_establish_xname(irq, ipl,
+// 			    IST_LEVEL | iflags, func, NULL, xname);
+// 		} else {
+// 			irq->intr_ih = intr_establish_xname(irq, ipl,
+// 			    IST_LEVEL | iflags, bcm2835_icu_intr, irq, xname);
+// 		}
+// 		if (irq->intr_ih == NULL) {
+// 			kmem_free(irq, sizeof(*irq));
+// 			return NULL;
+// 		}
 		sc->sc_irq[source] = irq;
+
+		// XXXNH this makes it all go wrong at apl0
+//		csr_sie_set(__BIT(source));
 	} else {
 		if (irq->intr_arg == NULL || arg == NULL) {
 			device_printf(dev,
@@ -143,6 +157,11 @@ intc_intr_establish(struct intc_fdt_softc *sc, u_int source, u_int ipl,
 
 	irq->intr_refcnt++;
 	TAILQ_INSERT_TAIL(&irq->intr_handlers, irqh, ih_next);
+
+#if 0
+	evcnt_attach_dynamic(&pcpu->pcpu_evs[is->is_irq], EVCNT_TYPE_INTR, NULL,
+	    pcpu->pcpu_name, is->is_source);
+#endif
 
 	/*
 	 * XXX interrupt_distribute(9) assumes that any interrupt

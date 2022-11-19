@@ -59,5 +59,6 @@ SNAP_MD_POST_DEPS+=	smp_riscv32
 
 snap_md_post: check_DESTDIR check_RELEASEDIR snap_post .WAIT ${SNAP_MD_POST_DEPS}
 
+# XXXNH remove instkernel?
 INSTALLATION_DIRS+=	binary/gzimg		\
 			installation/instkernel
