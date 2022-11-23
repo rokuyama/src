@@ -104,8 +104,8 @@ vaddr_t kasan_kernelsize;
 #endif
 
 /* XXX */
-vaddr_t physical_start;
-vaddr_t physical_end;
+paddr_t physical_start;
+paddr_t physical_end;
 /* filled in before cleaning bss. keep in .data */
 u_long kern_vtopdiff __attribute__((__section__(".data")));
 
