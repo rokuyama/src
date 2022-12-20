@@ -33,9 +33,11 @@
 __KERNEL_RCSID(0, "$NetBSD: efi_machdep.c,v 1.13 2022/05/03 20:10:20 skrll Exp $");
 
 #include <sys/param.h>
+
 #include <uvm/uvm_extern.h>
 
 #include <arm/cpufunc.h>
+#include <arm/efirt.h>
 
 #include <arm/arm/efi_runtime.h>
 
@@ -49,8 +51,8 @@ static struct {
 static bool efi_userva = true;
 
 void
-arm_efirt_md_map_range(vaddr_t va, paddr_t pa, size_t sz,
-    enum arm_efirt_mem_type type)
+cpu_efirt_map_range(vaddr_t va, paddr_t pa, size_t sz,
+    enum cpu_efirt_mem_type type)
 {
 	int flags = 0;
 	int prot = 0;

@@ -44,13 +44,6 @@ efi_status	arm_efirt_setvar(uint16_t *, struct uuid *, uint32_t,
 				 u_long, void *);
 int		arm_efirt_reset(enum efi_reset);
 
-enum arm_efirt_mem_type {
-	ARM_EFIRT_MEM_CODE,
-	ARM_EFIRT_MEM_DATA,
-	ARM_EFIRT_MEM_MMIO,
-};
-
-void		arm_efirt_md_map_range(vaddr_t, paddr_t, size_t, enum arm_efirt_mem_type);
 int		arm_efirt_md_enter(void);
 void		arm_efirt_md_exit(void);
 

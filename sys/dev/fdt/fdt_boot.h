@@ -32,6 +32,24 @@
 #ifndef _DEV_FDT_FDT_BOOT_H_
 #define _DEV_FDT_FDT_BOOT_H_
 
+#ifdef EFI_RUNTIME
+#include <machine/efirt.h>
+
+void fdt_map_efi_runtime(const char *prop, enum cpu_efirt_mem_type type);
+#endif
+
+void fdt_probe_initrd(uint64_t *, uint64_t *);
+void fdt_setup_initrd(void);
+void fdt_probe_rndseed(uint64_t *, uint64_t *);
+void fdt_setup_rndseed(void);
+void fdt_probe_efirng(uint64_t *, uint64_t *);
+void fdt_setup_efirng(void);
+
 void fdt_update_stdout_path(void *, const char *);
+
+#ifdef XXXNHnotyet
+void fdt_detect_root_device(device_t, char *);
+void fdt_cpu_rootconf(char *);
+#endif
 
 #endif /* _DEV_FDT_FDT_BOOT_H_ */
