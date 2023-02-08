@@ -3,5 +3,6 @@
 TARGETS+=	dtblist
 
 SUBDIR+=	sifive
+SUBDIR+=	starfive
 
 .include <bsd.subdir.mk>

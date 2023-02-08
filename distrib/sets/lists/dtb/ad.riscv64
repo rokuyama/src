@@ -6,5 +6,7 @@
 ./boot/dtb/sifive					dtb-base-boot  dtb
 ./boot/dtb/sifive/hifive-unleashed-a00.dtb		dtb-base-boot  dtb
 ./boot/dtb/sifive/hifive-unmatched-a00.dtb		dtb-base-boot  dtb
-./boot/dtb/sifive/starfive_vic7100_beagle_v.dtb		dtb-base-boot  dtb
-./boot/dtb/sifive/starfive_vic7100_evb.dtb		dtb-base-boot  dtb
+./boot/dtb/starfive						dtb-base-boot	dtb
+./boot/dtb/starfive/jh7100-beaglev-starlight-a1.dtb		dtb-base-boot	dtb
+./boot/dtb/starfive/jh7100-beaglev-starlight.dtb		dtb-base-boot	dtb
+./boot/dtb/starfive/jh7100-starfive-visionfive-v1.dtb		dtb-base-boot	dtb
