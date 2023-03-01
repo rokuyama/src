@@ -176,7 +176,8 @@ pmap_md_xtab_activate(struct pmap *pmap, struct lwp *l)
 //	UVMHIST_FUNC(__func__); UVMHIST_CALLED(maphist);
 
 	struct cpu_info * const ci = curcpu();
-	struct pmap_asid_info * const pai = PMAP_PAI(pmap, cpu_tlb_info(ci));
+	struct pmap_tlb_info * const ti = cpu_tlb_info(ci);
+	struct pmap_asid_info * const pai = PMAP_PAI(pmap, ti);
 
 	uint64_t satp =
 #ifdef _LP64
@@ -188,6 +189,10 @@ pmap_md_xtab_activate(struct pmap *pmap, struct lwp *l)
 	    __SHIFTIN(pmap->pm_md.md_ppn, SATP_PPN);
 
 	csr_satp_write(satp);
+
+	if (l && !tlbinfo_asids_p(ti)) {
+		tlb_invalidate_all();
+	}
 }
 
 void
@@ -327,6 +332,8 @@ pmap_bootstrap(vaddr_t vstart, vaddr_t vend)
 	/* init the lock */
 	// XXXNH per cpu?
 	pmap_tlb_info_init(&pmap_tlb0_info);
+
+	VPRINTF("ASID max %x ", pmap_tlb0_info.ti_asid_max);
 
 #ifdef MULTIPROCESSOR
 	VPRINTF("kcpusets ");

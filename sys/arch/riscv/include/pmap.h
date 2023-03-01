@@ -218,7 +218,16 @@ pmap_md_vca_clean(struct vm_page_md *mdpg, vaddr_t va, int op)
 static inline size_t
 pmap_md_tlb_asid_max(void)
 {
-	return PMAP_TLB_NUM_PIDS - 1;
+	const register_t satp = csr_satp_read();
+	const register_t test = satp | SATP_ASID;
+
+	csr_satp_write(test);
+
+	const register_t ret = __SHIFTOUT(csr_satp_read(), SATP_ASID);
+	csr_satp_write(satp);
+
+	KASSERT(ret < PMAP_TLB_NUM_PIDS);
+	return ret;
 }
 
 static inline pt_entry_t *
