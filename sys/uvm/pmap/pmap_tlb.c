@@ -830,6 +830,22 @@ pmap_tlb_asid_alloc(struct pmap_tlb_info *ti, pmap_t pm,
 	KASSERT(ti->ti_asids_free > 0);
 	KASSERT(ti->ti_asid_hint > KERNEL_PID);
 
+	if (__predict_false(!tlbinfo_asids_p(ti))) {
+#if defined(MULTIPROCESSOR)
+		/*
+		 * Mark that we are active for all CPUs sharing this TLB.
+		 * The bits in pm_active belonging to this TLB can only
+		 * be changed  while this TLBs lock is held.
+		 */
+#if PMAP_TLB_MAX == 1
+		kcpuset_copy(pm->pm_active, kcpuset_running);
+#else
+		kcpuset_merge(pm->pm_active, ti->ti_kcpuset);
+#endif
+#endif
+		return;
+	}
+
 	/*
 	 * If the last ASID allocated was the maximum ASID, then the
 	 * hint will be out of range.  Reset the hint to first
@@ -937,7 +953,7 @@ pmap_tlb_asid_acquire(pmap_t pm, struct lwp *l)
 		/*
 		 * If we've run out ASIDs, reinitialize the ASID space.
 		 */
-		if (__predict_false(tlbinfo_noasids_p(ti))) {
+		if (__predict_false(tlbinfo_noasids_p(ti) && tlbinfo_asids_p(ti))) {
 			KASSERT(l == curlwp);
 			UVMHIST_LOG(maphist, " asid reinit", 0, 0, 0, 0);
 			pmap_tlb_asid_reinitialize(ti, TLBINV_NOBODY);

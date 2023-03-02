@@ -97,7 +97,7 @@ struct pmap_asid_info {
 #define	TLBINFO_LOCK(ti)		mutex_spin_enter((ti)->ti_lock)
 #define	TLBINFO_UNLOCK(ti)		mutex_spin_exit((ti)->ti_lock)
 #define	TLBINFO_OWNED(ti)		mutex_owned((ti)->ti_lock)
-#define	PMAP_PAI_ASIDVALID_P(pai, ti)	((pai)->pai_asid != 0)
+#define	PMAP_PAI_ASIDVALID_P(pai, ti)	((pai)->pai_asid != 0 || ti->ti_asid_max == 0)
 #define	PMAP_PAI(pmap, ti)		(&(pmap)->pm_pai[tlbinfo_index(ti)])
 #define	PAI_PMAP(pai, ti)	\
 	((pmap_t)((intptr_t)(pai) \
@@ -119,6 +119,7 @@ struct pmap_tlb_info {
 	u_int ti_wired;			/* # of wired TLB entries */
 	tlb_asid_t ti_asid_hint;	/* probable next ASID to use */
 	tlb_asid_t ti_asid_max;
+#define	tlbinfo_asids_p(ti)	((ti)->ti_asid_max != 0)
 	LIST_HEAD(, pmap_asid_info) ti_pais; /* list of active ASIDs */
 #ifdef MULTIPROCESSOR
 	pmap_t ti_victim;
