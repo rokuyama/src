@@ -46,5 +46,8 @@ options 	DEBUG		# expensive debugging checks/support
 #options 	COMPAT_NETBSD32
 #options 	EXEC_ELF32
 
+# Cache controller
+sfcc* 		at fdt?			# SiFive FU[57]40 L2 Cache
+
 # Pull in optional local configuration - always at end
 cinclude 	"arch/riscv/conf/GENERIC64.local"

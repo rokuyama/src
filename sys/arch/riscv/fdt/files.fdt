@@ -18,6 +18,10 @@ device	intc: fdt
 attach	intc at fdt with intc_fdt
 file	arch/riscv/fdt/intc_fdt.c		intc_fdt
 
+device	sfcc: fdt
+attach	sfcc at fdt with sfcc_fdt
+file	arch/riscv/fdt/sfcc_fdt.c		sfcc_fdt
+
 #device	cpufreqdt
 #attach	cpufreqdt at cpu with cpufreq_dt
 #file	dev/fdt/cpufreq_dt.c			cpufreq_dt
