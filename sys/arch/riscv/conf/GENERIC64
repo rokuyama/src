@@ -49,5 +49,8 @@ options 	DEBUG		# expensive debugging checks/support
 # Cache controller
 sfcc* 		at fdt?			# SiFive FU[57]40 L2 Cache
 
+# Clock controller
+jh7100clkc* 	at fdt?	pass 2		# SiFive JH7100 clock controller
+
 # Pull in optional local configuration - always at end
 cinclude 	"arch/riscv/conf/GENERIC64.local"

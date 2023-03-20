@@ -4,6 +4,11 @@
 #
 #
 
+# JH7100 Clock controller
+device	jh7100clkc
+attach	jh7100clkc at fdt with jh7100_clkc
+file	arch/riscv/sifive/jh7100_clkc.c		jh7100_clkc
+
 # FU540 Power Reset Clocking Interrupt (PRCI) subsystem
 device	prci
 attach	prci at fdt with fu540_prci
