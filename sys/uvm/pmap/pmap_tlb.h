@@ -161,10 +161,10 @@ extern u_int pmap_ntlbs;
 # define cpu_set_tlb_info(ci, ti)	((void)((ci)->ci_tlb_info = (ti)))
 #endif
 #ifndef cpu_tlb_info
-# if PMAP_TLB_MAX > 1
+# if defined MULTIPROCESSOR && PMAP_TLB_MAX > 1
 #  define cpu_tlb_info(ci)		((ci)->ci_tlb_info)
 # else
-#  define cpu_tlb_info(ci)		(&pmap_tlb0_info)
+#  define cpu_tlb_info(ci)		((void)(ci), &pmap_tlb0_info)
 # endif
 #endif
 
