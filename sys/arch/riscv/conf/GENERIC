@@ -43,6 +43,17 @@ options 	DEBUG		# expensive debugging checks/support
 #options 	RISCV_SYSCALL_DEBUG
 #options 	SYSCALL_DEBUG
 
+# SDMMC
+dwcmmc* 	at fdt?
+sdhc* 		at fdt?			# SD Host Controller Interface
+sdmmc* 		at sdmmcbus?
+ld0 		at sdmmc0
+ld1 		at sdmmc1
+ld2 		at sdmmc2
+ld3 		at sdmmc3
+ld* 		at sdmmc?
+bwfm* 		at sdmmc?		# Broadcom BCM43xxx WiFi Interface
+
 
 # Pull in optional local configuration - always at end
 cinclude 	"arch/riscv/conf/GENERIC.local"
