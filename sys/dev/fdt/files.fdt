@@ -150,6 +150,10 @@ file	dev/fdt/ehci_fdt.c			ehci_fdt
 attach	ohci at fdt with ohci_fdt
 file	dev/fdt/ohci_fdt.c			ohci_fdt
 
+# Cadence USB3 XHCI
+attach	xhci at fdt with cdns3_fdt
+file	dev/fdt/cdns3_fdt.c			cdns3_fdt
+
 # Designware USB2 OTG
 attach	dwctwo at fdt with dwc2_fdt
 file	dev/fdt/dwc2_fdt.c			dwc2_fdt

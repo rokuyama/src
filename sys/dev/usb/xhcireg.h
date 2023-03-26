@@ -131,7 +131,7 @@
 #define	 XHCI_CMD_VTIOE		__BIT(16)	/* RW VTIO Enable */
 
 #define	XHCI_WAIT_CNR		100		/* in 1ms */
-#define	XHCI_WAIT_HCRST		100		/* in 1ms */
+#define	XHCI_WAIT_HCRST		1000		/* in 1ms */
 #define	XHCI_WAIT_RSS		100		/* in 1ms */
 #define	XHCI_WAIT_SSS		100		/* in 1ms */
 #define	XHCI_WAIT_PLS_U0	100		/* in 1ms */

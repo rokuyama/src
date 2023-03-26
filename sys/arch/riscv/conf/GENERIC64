@@ -56,5 +56,13 @@ jh7100clkc* 	at fdt?	pass 2		# SiFive JH7100 clock controller
 jh7100pinctrl* 	at fdt? pass 2		# SiFive JH7100 gpio controller
 gpio* 		at gpiobus?
 
+
+# USB
+xhci* 		at fdt?			# XHCI
+usb* 		at usbus?
+include "dev/usb/usbdevices.config"
+midi*		at midibus?
+pseudo-device 	sequencer		# MIDI sequencer
+
 # Pull in optional local configuration - always at end
 cinclude 	"arch/riscv/conf/GENERIC64.local"
