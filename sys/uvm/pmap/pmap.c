@@ -573,7 +573,9 @@ pmap_steal_memory(vsize_t size, vaddr_t *vstartp, vaddr_t *vendp)
 	size = round_page(size);
 	npgs = atop(size);
 
+#if 0
 	aprint_debug("%s: need %zu pages\n", __func__, npgs);
+#endif
 
 	for (uvm_physseg_t bank = uvm_physseg_get_first();
 	     uvm_physseg_valid_p(bank);
@@ -582,20 +584,26 @@ pmap_steal_memory(vsize_t size, vaddr_t *vstartp, vaddr_t *vendp)
 		if (uvm.page_init_done == true)
 			panic("pmap_steal_memory: called _after_ bootstrap");
 
+#if 0
 		aprint_debug("%s: seg %"PRIxPHYSSEG": %#"PRIxPADDR" %#"PRIxPADDR" %#"PRIxPADDR" %#"PRIxPADDR"\n",
 		    __func__, bank,
 		    uvm_physseg_get_avail_start(bank), uvm_physseg_get_start(bank),
 		    uvm_physseg_get_avail_end(bank), uvm_physseg_get_end(bank));
+#endif
 
 		if (uvm_physseg_get_avail_start(bank) != uvm_physseg_get_start(bank)
 		    || uvm_physseg_get_avail_start(bank) >= uvm_physseg_get_avail_end(bank)) {
+#if 0
 			aprint_debug("%s: seg %"PRIxPHYSSEG": bad start\n", __func__, bank);
+#endif
 			continue;
 		}
 
 		if (uvm_physseg_get_avail_end(bank) - uvm_physseg_get_avail_start(bank) < npgs) {
+#if 0
 			aprint_debug("%s: seg %"PRIxPHYSSEG": too small for %zu pages\n",
 			    __func__, bank, npgs);
+#endif
 			continue;
 		}
 
@@ -623,8 +631,10 @@ pmap_steal_memory(vsize_t size, vaddr_t *vstartp, vaddr_t *vendp)
 		pa = ptoa(uvm_physseg_get_start(bank));
 		uvm_physseg_unplug(atop(pa), npgs);
 
+#if 0
 		aprint_debug("%s: seg %"PRIxPHYSSEG": %zu pages stolen (%#"PRIxPADDR" left)\n",
 		    __func__, bank, npgs, VM_PHYSMEM_SPACE(bank));
+#endif
 
 		va = pmap_md_map_poolpage(pa, size);
 		memset((void *)va, 0, size);
