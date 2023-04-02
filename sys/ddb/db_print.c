@@ -53,6 +53,7 @@ db_show_regs(db_expr_t addr, bool have_addr,
 	db_expr_t value, offset;
 	const char *name;
 
+printf("%s: db_regs [%p, %p)\n", __func__, db_regs, db_eregs);
 	for (regp = db_regs; regp < db_eregs; regp++) {
 		vs = *regp;
 		vs.modif = modif;

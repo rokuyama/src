@@ -91,7 +91,7 @@ plic_intrstr(device_t dev, u_int *specifier, char *buf, size_t buflen)
 {
 	/* 1st cell is the interrupt number */
 	const int irq = be32toh(specifier[0]);
-
+printf("%s: irq %d\n", __func__, irq);
 	snprintf(buf, buflen, "%s irq %d", device_xname(dev), irq);
 
         return true;

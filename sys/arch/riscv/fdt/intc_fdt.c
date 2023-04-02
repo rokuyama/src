@@ -232,10 +232,13 @@ static const char * const intc_sources[IRQ_NSOURCES] = {
 static bool
 intc_fdt_intrstr(device_t dev, u_int *specifier, char *buf, size_t buflen)
 {
+printf("%s: specifier %p\n", __func__, specifier);
+
 	if (!specifier)
 		return false;
 
 	struct intc_fdt_softc * const sc = device_private(dev);
+printf("%s: sc_ci %p\n", __func__, sc->sc_ci);
 	if (sc->sc_ci == NULL)
 		return false;
 

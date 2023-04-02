@@ -229,15 +229,26 @@ clk_get_rate(struct clk *clk)
 int
 clk_set_rate(struct clk *clk, u_int rate)
 {
-	if (clk->flags & CLK_SET_RATE_PARENT)
+	printf("\n\n\n%s: setting rate of '%s' (%p) ", __func__, clk->name, clk);
+	if (clk->flags & CLK_SET_RATE_PARENT) {
+		printf("via parent '%s' (%p)\n", clk_get_parent(clk)->name, clk_get_parent(clk));
 		return clk_set_rate(clk_get_parent(clk), rate);
+	}
 
-	if (clk->domain->funcs->set_rate)
+	if (clk->domain->funcs->set_rate) {
+		printf("via method\n");
+
 		return clk->domain->funcs->set_rate(clk->domain->priv,
 		    clk, rate);
+	}
 
-	if (clk_get_rate(clk) == rate)
+	if (clk_get_rate(clk) == rate) {
+		printf("no way to set but it's OK\n");
+
 		return 0;
+	}
+
+	printf("no way to set and NOT OK\n");
 
 	return EINVAL;
 }

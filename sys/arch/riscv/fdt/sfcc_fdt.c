@@ -82,7 +82,7 @@ __KERNEL_RCSID(0, "$NetBSD$");
 static const struct device_compatible_entry compat_data[] = {
 	{ .compat = "sifive,fu540-c000-ccache" },
 	{ .compat = "sifive,fu740-c000-ccache" },
-	{ .compat = "starfive,jh7100-ccache" },
+	{ .compat = "starfive,jh7100-ccache" },		// has broken irq (DATA_UNCORR)
 	{ .compat = "starfive,jh7110-ccache" },
 	{ .compat = "starfive,ccache0" },
 	DEVICE_COMPAT_EOL
@@ -124,6 +124,9 @@ static void
 sfcc_cache_wbinv_range(vaddr_t va, paddr_t pa, psize_t len)
 {
 	struct sfcc_fdt_softc * const sc = sfcc_sc;
+
+printf("%s: va %" PRIxVADDR " pa %"PRIxPADDR "len %" PRIxPSIZE"\n", __func__,
+    va, pa, len);
 
 	KASSERT(powerof2(sc->sc_line_size));
 

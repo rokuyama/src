@@ -123,11 +123,13 @@ dwcmmc_fdt_attach(device_t parent, device_t self, void *aux)
 	fdtbus_clock_assign(phandle);
 
 	esc->sc_clk_biu = fdtbus_clock_get(phandle, "biu");
+printf("%s: biu returned %p\n", __func__,  esc->sc_clk_biu);
 	if (esc->sc_clk_biu == NULL) {
 		aprint_error(": couldn't get clock biu\n");
 		return;
 	}
 	esc->sc_clk_ciu = fdtbus_clock_get(phandle, "ciu");
+printf("%s: ciu returned %p\n", __func__,  esc->sc_clk_ciu);
 	if (esc->sc_clk_ciu == NULL) {
 		aprint_error(": couldn't get clock ciu\n");
 		return;
@@ -238,6 +240,9 @@ dwcmmc_fdt_bus_clock(struct dwc_mmc_softc *sc, int rate)
 	struct dwcmmc_fdt_softc *esc = device_private(sc->sc_dev);
         const u_int ciu_div = sc->sc_ciu_div > 0 ? sc->sc_ciu_div : 1;
 	int error;
+
+printf("%s: ciu %u vs %u\n", __func__, clk_get_rate(esc->sc_clk_ciu), 1000 * rate * ciu_div);
+
 
 	error = clk_set_rate(esc->sc_clk_ciu, 1000 * rate * ciu_div);
 	if (error != 0) {

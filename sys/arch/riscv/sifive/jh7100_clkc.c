@@ -843,6 +843,7 @@ jh7100_clkc_set_rate(void *priv, struct clk *clk, u_int rate)
 	struct jh7100_clkc_clk * const jcc =
 	    container_of(clk, struct jh7100_clkc_clk, jcc_base);
 
+	// Not needed because clk_set_rate
         if (clk->flags & CLK_SET_RATE_PARENT) {
 printf("%s: XXX happened\n", __func__);
 		struct clk *clk_parent = clk_get_parent(clk);
