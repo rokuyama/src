@@ -76,6 +76,7 @@ plic_intr_establish_xname(u_int irq, int ipl, int flags,
 //	u_int cidx = cpu_index(curcpu());
 	u_int cidx = 0;
 
+printf("%s: irq %d ipl %d (%p)\n", __func__, irq, ipl, &sc->sc_intrevs[irq]);
 	evcnt_attach_dynamic(&sc->sc_intrevs[irq], EVCNT_TYPE_INTR, NULL,
 	    "plic", xname);
 
@@ -122,11 +123,17 @@ plic_intr(void *arg)
 	uint32_t pending;
 	int rv = 0;
 
+	printf("%s: called, cpu_number %lu claim %" PRIxBUSADDR " "
+	    "complete %" PRIxBUSADDR "\n", __func__, cpuid,
+	    claim_addr, complete_addr);
 	while ((pending = PLIC_READ(sc, claim_addr)) > 0) {
 		struct plic_intrhand *ih = &sc->sc_intr[pending];
 
+		printf("%s: sc->intrevs %p/%p\n", __func__,
+		    sc->sc_intrevs, &sc->sc_intrevs[pending]);
 		sc->sc_intrevs[pending].ev_count++;
-
+		printf("%s: pending %#" PRIx32" calling %p(%p)\n", __func__,
+		    pending, ih->ih_func, ih->ih_arg);
 		KASSERT(ih->ih_func != NULL);
 #ifdef MULTIPROCESSOR
 		if (!ih->ih_mpsafe) {
@@ -151,8 +158,11 @@ plic_enable(struct plic_softc *sc, u_int cpu, u_int irq)
 	const uint32_t mask = __BIT(irq % 32);
 
 	uint32_t reg = PLIC_READ(sc, addr);
+	uint32_t oreg = reg;
 	reg |= mask;
 	PLIC_WRITE(sc, addr, reg);
+	printf("%s: addr %#" PRIxBUSADDR " %#" PRIx32" -> %#" PRIx32"\n",
+	    __func__, addr, oreg, reg);
 }
 
 void
@@ -163,9 +173,14 @@ plic_disable(struct plic_softc *sc, u_int cpu, u_int irq)
 	const uint32_t mask = __BIT(irq % 32);
 
 	uint32_t reg = PLIC_READ(sc, addr);
+	uint32_t oreg = reg;
 	reg &= ~mask;
 	PLIC_WRITE(sc, addr, reg);
+	printf("%s: addr %#" PRIxBUSADDR " %#" PRIx32" -> %#" PRIx32"\n",
+	    __func__, addr, oreg, reg);
 }
+
+int nhpdbg = 0;
 
 void
 plic_set_priority(struct plic_softc *sc, u_int irq, uint32_t priority)
@@ -174,6 +189,10 @@ plic_set_priority(struct plic_softc *sc, u_int irq, uint32_t priority)
 	const bus_addr_t addr = PLIC_PRIORITY(irq);
 
 	PLIC_WRITE(sc, addr, priority);
+
+	if (nhpdbg)
+		printf("%s: addr %"PRIxBUSADDR " -> %" PRIx32"\n", __func__,
+		    addr, priority);
 }
 
 void
@@ -210,6 +229,8 @@ plic_attach_common(struct plic_softc *sc, bus_addr_t addr, bus_size_t size)
 	for (irq = PLIC_FIRST_IRQ; irq < sc->sc_ndev; irq++) {
 		plic_set_priority(sc, irq, 0);
 	}
+
+	nhpdbg = 1;
 
 	/* Set priority thresholds for all interrupts to 0 (not masked). */
 	for (CPU_INFO_FOREACH(cii, ci)) {

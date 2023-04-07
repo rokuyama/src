@@ -60,6 +60,7 @@ plic_fdt_intr_establish(device_t dev, u_int *specifier, int ipl, int flags,
 
 	/* 1st cell is the interrupt number */
 	const u_int irq = be32toh(specifier[0]);
+printf("%s: irq %d vs %d\n", __func__, irq, sc->sc_ndev);
 	if (irq > sc->sc_ndev) {
 		aprint_error_dev(dev, "irq %d greater than max irq %d\n",
 		    irq, sc->sc_ndev);
