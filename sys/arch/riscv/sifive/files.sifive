@@ -13,3 +13,8 @@ file	arch/riscv/sifive/jh7100_clkc.c		jh7100_clkc
 device	prci
 attach	prci at fdt with fu540_prci
 file	arch/riscv/sifive/fu540_prci.c		fu540_prci
+
+# GPIO
+device	jh7100pinctrl: gpiobus
+attach	jh7100pinctrl at fdt with jh7100_pinctrl
+file	arch/riscv/sifive/jh7100_pinctrl.c	jh7100_pinctrl

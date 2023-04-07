@@ -52,5 +52,9 @@ sfcc* 		at fdt?			# SiFive FU[57]40 L2 Cache
 # Clock controller
 jh7100clkc* 	at fdt?	pass 2		# SiFive JH7100 clock controller
 
+# GPIO controller
+jh7100pinctrl* 	at fdt? pass 2		# SiFive JH7100 gpio controller
+gpio* 		at gpiobus?
+
 # Pull in optional local configuration - always at end
 cinclude 	"arch/riscv/conf/GENERIC64.local"
