@@ -44,6 +44,8 @@ __KERNEL_RCSID(0, "$NetBSD: dwc_mmc.c,v 1.29 2022/01/09 15:03:43 jmcneill Exp $"
 #include <dev/ic/dwc_mmc_reg.h>
 #include <dev/ic/dwc_mmc_var.h>
 
+#define DWC_MMC_DEBUG
+
 #define DWC_MMC_NDESC		64
 
 static int	dwc_mmc_host_reset(sdmmc_chipset_handle_t);
