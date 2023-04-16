@@ -400,8 +400,8 @@ jh7100_pinctrl_gpio_write(device_t dev, void *priv, int val, bool raw)
 	mutex_enter(&sc->sc_lock);
 #if 0
 	GPIOWR4(sc, GPIO_DOUT_CFG(pin_no), val);
-	printf("%s: pin %d %#x/%#x\n", __func__, pin_no, val, GPIO_DOUT_CFG(pin_no));
 #endif
+	printf("%s: pin %d %#x/%#x\n", __func__, pin_no, val, GPIO_DOUT_CFG(pin_no));
 	mutex_enter(&sc->sc_lock);
 }
 
