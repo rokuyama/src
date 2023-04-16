@@ -6,7 +6,8 @@ NOMAN=	# define
 
 # Only install the SDIO firmware binaries on platforms where it will
 # be useful.
-.if ${MACHINE} == "evbarm"
+.if (${MACHINE} == "evbarm" || \
+     ${MACHINE} == "riscv")
 BWFM_WANT_SDIO_FIRMWARE=	yes
 .endif
 

@@ -1286,6 +1286,7 @@ MKFIRMWARE.hppa=		yes
 MKFIRMWARE.i386=		yes
 MKFIRMWARE.mac68k=		yes
 MKFIRMWARE.macppc=		yes
+MKFIRMWARE.riscv=		yes
 MKFIRMWARE.sandpoint=		yes
 MKFIRMWARE.sparc64=		yes
 
