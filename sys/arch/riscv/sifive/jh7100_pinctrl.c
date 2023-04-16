@@ -65,9 +65,15 @@ struct jh7100_pinctrl_gpio_pin {
 
 #define GPIO_DIN(pin)			(0x0048 + (((pin) / 32) * 4))
 #define GPIO_DOUT_CFG(pin)		(0x0050 + ((pin) * 8))
+#define  GPIO_DOUT_REVERSE		__BIT(31)
+#define  GPIO_DOUT_MASK			__BITS(30,  0)
 #define GPIO_DOEN_CFG(pin)		(0x0054 + ((pin) * 8))
+#define  GPIO_DOEN_REVERSE		__BIT(31)
+#define  GPIO_DOEN_MASK			__BITS(30,  0)
+#if 0
 #define  GPO_ENABLE			0
 #define  GPO_DISABLE			1
+#endif
 #define GPI_DIN(din)			(0x0250 + ((din) * 4))
 #define  GPI_NONE			0xff
 
@@ -123,20 +129,23 @@ static inline void
 jh7100_padctl_rmw(struct jh7100_pinctrl_softc * const sc, u_int pin_no,
     uint16_t val, uint16_t mask)
 {
+	const bus_size_t regoff = sc->sc_padctl_gpio + 4 * (pin_no / 2);
 	const u_int shift = 16 * (pin_no % 2);
 	const uint32_t regmask = mask << shift;
 	const uint32_t regval = val << shift;
 
 	mutex_enter(&sc->sc_lock);
-	uint32_t reg = PCTLRD4(sc, PAD_GPIO(pin_no));
+	uint32_t reg = PCTLRD4(sc, regoff);
 	uint32_t oreg = reg;
 	reg &= ~regmask;
 	reg |= regval;
-	PCTLWR4(sc, PAD_GPIO(pin_no), reg);
+// XXXNH not yet
+//	PCTLWR4(sc, regoff, reg);
 	mutex_exit(&sc->sc_lock);
 
-	aprint_debug_dev(sc->sc_dev, "pin %d %08x -> %08x\n", pin_no, oreg,
-	    reg);
+	aprint_debug_dev(sc->sc_dev, "pin %d %08x -> %08x (%#"
+	    PRIxBUSSIZE "/%#x/%#x)\n", pin_no, oreg, reg, regoff,
+	    sc->sc_padctl_gpio, PAD_GPIO(pin_no));
 }
 
 static int
@@ -248,12 +257,10 @@ jh7100_pinctrl_set_config_group(struct jh7100_pinctrl_softc *sc, int group)
 	}
 
 	if (pins != NULL) {
-		// linux starfive_pinconf_group_set
 		plen = pins_len;
 		parray = pins;
 	}
 	if (pinmux != NULL) {
-		// linux starfive_set_mux
 		plen = pinmux_len;
 		parray = pinmux;
 	}
@@ -274,18 +281,34 @@ jh7100_pinctrl_set_config_group(struct jh7100_pinctrl_softc *sc, int group)
 			u_int dout = __SHIFTOUT(p, DT_GPIOMUX_DOUT_MASK);
 			u_int doen = __SHIFTOUT(p, DT_GPIOMUX_DOEN_MASK);
 			u_int din = __SHIFTOUT(p, DT_GPIOMUX_DIN_MASK);
+			u_int doutrev = __SHIFTOUT(p, DT_GPIOMUX_DOUTREV_MASK);
+			u_int doenrev = __SHIFTOUT(p, DT_GPIOMUX_DOENREV_MASK);
+
+			uint32_t doutval =
+			    __SHIFTIN(doutrev, GPIO_DOUT_REVERSE) |
+			    __SHIFTIN(dout, GPIO_DOUT_MASK);
+			uint32_t doenval =
+			    __SHIFTIN(doenrev, GPIO_DOEN_REVERSE) |
+			    __SHIFTIN(doen, GPIO_DOEN_MASK);
 
 			aprint_debug_dev(sc->sc_dev, "set_config: group   %d "
-			    ", gpio %d dout %#x doen %#x din %#x\n",
-			    group, pin_no, dout, doen, din);
+			    ", gpio %d dout %#x/%#x doen %#x/%#x din %#x/%#x\n",
+			    group, pin_no,
+			    doutval, GPIORD4(sc, GPIO_DOUT_CFG(pin_no)),
+			    doenval, GPIORD4(sc, GPIO_DOEN_CFG(pin_no)),
+			    din, GPIORD4(sc, GPI_DIN(din)));
 
 			mutex_enter(&sc->sc_lock);
-			GPIOWR4(sc, GPIO_DOUT_CFG(pin_no), dout);
-			GPIOWR4(sc, GPIO_DOEN_CFG(pin_no), doen);
+// XXXNH not yet
+#if 0
+			GPIOWR4(sc, GPIO_DOUT_CFG(pin_no), doutval);
+			GPIOWR4(sc, GPIO_DOEN_CFG(pin_no), doenval);
 			if (din != GPI_NONE) {
 				GPIOWR4(sc, GPI_DIN(din), pin_no + 2);
 			}
+#endif
 			mutex_exit(&sc->sc_lock);
+			// continue???
 		}
 
 		jh7100_padctl_rmw(sc, pin_no, val, mask);
@@ -375,7 +398,9 @@ jh7100_pinctrl_gpio_write(device_t dev, void *priv, int val, bool raw)
 		val = !val;
 
 	mutex_enter(&sc->sc_lock);
+#if 0
 	GPIOWR4(sc, GPIO_DOUT_CFG(pin_no), val);
+#endif
 	mutex_enter(&sc->sc_lock);
 }
 
@@ -460,6 +485,8 @@ jh7100_pinctrl_attach(device_t parent, device_t self, void *aux)
 		aprint_error_dev(sc->sc_dev, "invalid signal group %u", sel);
 		return;
 	}
+
+	aprint_verbose_dev(self, "selector %d\n", sel);
 
 	fdtbus_register_gpio_controller(sc->sc_dev, sc->sc_phandle,
 	    &jh7100_pinctrl_gpio_funcs);
