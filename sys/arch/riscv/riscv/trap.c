@@ -327,6 +327,8 @@ get_faulttype(register_t cause)
 	return VM_PROT_EXECUTE;
 }
 
+int nhdebug = 0;
+
 static bool
 trap_pagefault_fixup(struct trapframe *tf, struct pmap *pmap, register_t cause,
     intptr_t addr)
@@ -358,6 +360,16 @@ trap_pagefault_fixup(struct trapframe *tf, struct pmap *pmap, register_t cause,
 		npte = opte;
 
 		switch (cause) {
+		case CAUSE_LOAD_PAGE_FAULT:
+			if ((npte & PTE_R) == 0) {
+				npte |= PTE_A;
+				attr |= VM_PAGEMD_REFERENCED;
+			}
+			if (nhdebug < 10) {
+				printf("%s: addr %lx opte %#lx npte %#lx\n", __func__, addr, opte, npte);
+				nhdebug++;
+			}
+			break;
 		case CAUSE_STORE_ACCESS:
 			if ((npte & PTE_W) != 0) {
 				npte |= PTE_A | PTE_D;
@@ -380,7 +392,7 @@ trap_pagefault_fixup(struct trapframe *tf, struct pmap *pmap, register_t cause,
 #endif
 			break;
 		default:
-			panic("%s: Unhandled cause!", __func__);
+			panic("%s: Unhandled cause (%#lx) for addr %lx", __func__, cause, addr);
 		}
 		if (attr == 0)
 			return false;

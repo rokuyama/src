@@ -383,7 +383,7 @@ jh7100_pinctrl_gpio_read(device_t dev, void *priv, bool raw)
 	int val = __SHIFTOUT(bank, mask);
 	if (!raw && pin->pin_actlo)
 		val = !val;
-
+printf("%s: pin %d bank %#08x mask %#08x val %d\n", __func__, pin_no, bank, mask, val);
 	return val;
 }
 
@@ -400,6 +400,7 @@ jh7100_pinctrl_gpio_write(device_t dev, void *priv, int val, bool raw)
 	mutex_enter(&sc->sc_lock);
 #if 0
 	GPIOWR4(sc, GPIO_DOUT_CFG(pin_no), val);
+	printf("%s: pin %d %#x/%#x\n", __func__, pin_no, val, GPIO_DOUT_CFG(pin_no));
 #endif
 	mutex_enter(&sc->sc_lock);
 }
@@ -460,7 +461,9 @@ jh7100_pinctrl_attach(device_t parent, device_t self, void *aux)
 	    &sel);
 	if (ret < 0) {
 		sel = PCTLRD4(sc, IO_PADSHARE_SEL);
+		printf("%s: read sel as %d\n", __func__, sel);
 	} else {
+		printf("%s: setting sel as %d\n", __func__, sel);
 		PCTLWR4(sc, IO_PADSHARE_SEL, sel);
 	}
 
