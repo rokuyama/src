@@ -139,8 +139,7 @@ jh7100_padctl_rmw(struct jh7100_pinctrl_softc * const sc, u_int pin_no,
 	uint32_t oreg = reg;
 	reg &= ~regmask;
 	reg |= regval;
-// XXXNH not yet
-//	PCTLWR4(sc, regoff, reg);
+	PCTLWR4(sc, regoff, reg);
 	mutex_exit(&sc->sc_lock);
 
 	aprint_debug_dev(sc->sc_dev, "pin %d %08x -> %08x (%#"
@@ -299,16 +298,12 @@ jh7100_pinctrl_set_config_group(struct jh7100_pinctrl_softc *sc, int group)
 			    din, GPIORD4(sc, GPI_DIN(din)));
 
 			mutex_enter(&sc->sc_lock);
-// XXXNH not yet
-#if 0
 			GPIOWR4(sc, GPIO_DOUT_CFG(pin_no), doutval);
 			GPIOWR4(sc, GPIO_DOEN_CFG(pin_no), doenval);
 			if (din != GPI_NONE) {
 				GPIOWR4(sc, GPI_DIN(din), pin_no + 2);
 			}
-#endif
 			mutex_exit(&sc->sc_lock);
-			// continue???
 		}
 
 		jh7100_padctl_rmw(sc, pin_no, val, mask);
