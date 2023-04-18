@@ -392,7 +392,7 @@ jh7100_pinctrl_gpio_write(device_t dev, void *priv, int val, bool raw)
 {
 	struct jh7100_pinctrl_softc * const sc = device_private(dev);
 	struct jh7100_pinctrl_gpio_pin *pin = priv;
-	const u_int pin_no = pin ->pin_no;
+//	const u_int pin_no = pin ->pin_no;
 
 	if (!raw && pin->pin_actlo)
 		val = !val;
