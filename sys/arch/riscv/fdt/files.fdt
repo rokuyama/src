@@ -4,7 +4,8 @@ include	"dev/pckbport/files.pckbport"
 
 file	arch/riscv/fdt/cpus_fdt.c
 file	arch/riscv/fdt/fdt_dma_machdep.c
-file	arch/riscv/fdt/riscv_platform.c
+file	arch/riscv/fdt/riscv_platform.c		#arm_fdt & gtmr_fdt & psci_fdt
+#file	arch/arm/fdt/arm_simplefb.c		arm_fdt & wsdisplay & genfb
 
 attach	cpu at fdt with cpu_fdt
 file	arch/riscv/fdt/cpu_fdt.c		cpu_fdt
@@ -16,3 +17,7 @@ file	arch/riscv/fdt/clint_fdt.c		clint_fdt
 device	intc: fdt
 attach	intc at fdt with intc_fdt
 file	arch/riscv/fdt/intc_fdt.c		intc_fdt
+
+#device	cpufreqdt
+#attach	cpufreqdt at cpu with cpufreq_dt
+#file	dev/fdt/cpufreq_dt.c			cpufreq_dt
