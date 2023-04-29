@@ -366,7 +366,9 @@ trap_pagefault_fixup(struct trapframe *tf, struct pmap *pmap, register_t cause,
 				attr |= VM_PAGEMD_REFERENCED;
 			}
 			if (nhdebug < 10) {
-				printf("%s: addr %lx opte %#lx npte %#lx\n", __func__, addr, opte, npte);
+				printf("%s: addr %#" PRIxPTR
+				     " opte %#" PRIxPTE " npte %#" PRIxPTE "\n",
+				     __func__, addr, opte, npte);
 				nhdebug++;
 			}
 			break;
@@ -392,7 +394,8 @@ trap_pagefault_fixup(struct trapframe *tf, struct pmap *pmap, register_t cause,
 #endif
 			break;
 		default:
-			panic("%s: Unhandled cause (%#lx) for addr %lx", __func__, cause, addr);
+			panic("%s: Unhandled cause (%#" PRIxREGISTER
+			     ") for addr %lx", __func__, cause, addr);
 		}
 		if (attr == 0)
 			return false;
