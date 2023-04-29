@@ -1,7 +1,8 @@
 #
 #	$NetBSD: GENERIC.common,v 1.51 2023/02/06 12:59:13 simonb Exp $
 #
-#	GENERIC evbarm kernel config (template)
+#	GENERIC common evbarm kernel config items shared between 32 and 64
+#	kernels
 #
 
 # estimated number of users
