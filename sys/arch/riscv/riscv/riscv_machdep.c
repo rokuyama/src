@@ -700,6 +700,11 @@ init_riscv(register_t hartid, paddr_t dtb)
 	/* set temporally to work printf()/panic() even before consinit() */
 	cn_tab = &earlycons;
 
+#ifndef _LP64
+for (volatile int i = 0; i < 1000000000; i++)
+	;
+#endif
+
 	/* Load FDT */
 	const vaddr_t dtbva = VM_KERNEL_DTB_BASE + (dtb & (NBSEG - 1));
 	void *fdt_data = (void *)dtbva;
