@@ -52,6 +52,12 @@ __KERNEL_RCSID(0, "$NetBSD: qemufwcfg.c,v 1.2 2018/09/03 16:29:31 riastradh Exp 
 #define	FWCFG_SEL_SWAP		htobe16
 #define	FWCFG_DATA_REG		0x00
 #define	FWCFG_DMA_ADDR		0x10
+#elif defined(__riscv)
+// XXXNH check these
+#define	FWCFG_SEL_REG		0x08
+#define	FWCFG_SEL_SWAP		htobe16
+#define	FWCFG_DATA_REG		0x00
+#define	FWCFG_DMA_ADDR		0x10
 #else
 #error driver does not support this architecture
 #endif
