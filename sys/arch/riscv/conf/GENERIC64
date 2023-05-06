@@ -62,7 +62,6 @@ xhci* 		at fdt?			# XHCI
 usb* 		at usbus?
 include "dev/usb/usbdevices.config"
 midi*		at midibus?
-pseudo-device 	sequencer		# MIDI sequencer
 
 # Pull in optional local configuration - always at end
 cinclude 	"arch/riscv/conf/GENERIC64.local"
