@@ -282,7 +282,10 @@ pmap_ptpage(struct pmap *pmap, vaddr_t va)
 
 //	UVMHIST_LOG(pmaphist, "pm_pdetab %#jx", ptb, 0, 0, 0);
 
-	KASSERT(pmap != pmap_kernel() || !pmap_md_direct_mapped_vaddr_p(va));
+	KASSERTMSG(pmap != pmap_kernel() || !pmap_md_direct_mapped_vaddr_p(va),
+	    "pmap_kernel: %s, va %#" PRIxVADDR,
+	    pmap == pmap_kernel() ? "true" : "false",
+	    pmap == pmap_kernel() ? va : 0);
 
 #ifdef _LP64
 	for (size_t segshift = XSEGSHIFT;
