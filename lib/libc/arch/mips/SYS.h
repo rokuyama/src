@@ -128,7 +128,7 @@
 LEAF(x);								\
 	SYSTRAP(y);							\
 	j ra;								\
-	END(x)
+END(x)
 
 #define PSEUDO(x,y)							\
 LEAF(x);								\

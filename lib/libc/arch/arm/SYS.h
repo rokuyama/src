@@ -79,7 +79,7 @@
 #define	CURBRK		_C_LABEL(__curbrk)
 
 #define _SYSCALL_NOERROR(x,y)						\
-	ENTRY(x);							\
+ENTRY(x);								\
 	SYSTRAP(y)
 
 #if  !defined(__thumb__) || defined(_ARM_ARCH_T2)
@@ -102,12 +102,12 @@
 #define PSEUDO_NOERROR(x,y)						\
 	_SYSCALL_NOERROR(x,y);						\
 	RET;								\
-	END(x)
+END(x)
 
 #define PSEUDO(x,y)							\
 	_SYSCALL(x,y);							\
 	RET;								\
-	END(x)
+END(x)
 
 
 #define RSYSCALL_NOERROR(x)						\

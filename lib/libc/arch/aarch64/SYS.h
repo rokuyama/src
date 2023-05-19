@@ -39,7 +39,7 @@
 #define SYSTRAP(x)	svc #(SYS_ ## x)
 
 #define _SYSCALL_NOERROR(x,y)						\
-	ENTRY(x);							\
+ENTRY(x);								\
 	SYSTRAP(y)
 
 #define _INVOKE_CERROR()						\
@@ -60,12 +60,12 @@
 #define PSEUDO_NOERROR(x,y)						\
 	_SYSCALL_NOERROR(x,y);						\
 	ret;								\
-	END(x)
+END(x)
 
 #define PSEUDO(x,y)							\
 	_SYSCALL(x,y);							\
 	ret;								\
-	END(x)
+END(x)
 
 #define RSYSCALL_NOERROR(x)						\
 	PSEUDO_NOERROR(x,x)
