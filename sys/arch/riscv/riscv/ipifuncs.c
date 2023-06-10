@@ -56,6 +56,7 @@ static const char * const ipi_names[] = {
 	[IPI_HALT]	= "ipi halt",
 	[IPI_XCALL]	= "ipi xcall",
 	[IPI_GENERIC]	= "ipi generic",
+//	[IPI_WDOG]	= "ipi wdog",
 };
 
 static void

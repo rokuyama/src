@@ -174,6 +174,18 @@ cpu_identify(device_t self, struct cpu_info *ci)
         aprint_verbose_dev(ci->ci_dev,
 	    "vendor 0x%" PRIxREGISTER " arch. %" PRIxREGISTER " imp. %" PRIx32 "\n",
 	    mvendorid, marchid, mimpid);
+
+#if 0
+	ci->ci_mvendorid = mvendorid;
+	ci->ci_marchid = marchid;
+	ci->ci_mimpid = mimpid;
+#endif
+#if 0
+	/* Handle errata. */
+	if (mvendorid == CPU_VENDOR_SIFIVE && marchid == CPU_ARCH_U7)
+		cpu_errata_sifive_cip_1200 = 1;
+#endif
+
 }
 
 
@@ -201,6 +213,8 @@ cpu_attach(device_t dv, cpuid_t id)
 		ci->ci_cpuid = id;
 		/* ci_cpuid is stored by own cpus when hatching */
 
+// rely on mi_cpu_attach to maintain cpu_infos
+//		cpu_info[ncpu] = ci;
 		if (cpu_hatched_p(unit) == 0) {
 			ci->ci_dev = dv;
 			device_set_private(dv, ci);

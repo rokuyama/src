@@ -45,6 +45,7 @@ __KERNEL_RCSID(0, "$NetBSD: cpu_fdt.c,v 1.2 2023/06/12 19:04:13 skrll Exp $");
 
 
 #ifdef MULTIPROCESSOR
+//XXXNH Make MI
 static bool
 riscv_fdt_cpu_okay(const int child)
 {
