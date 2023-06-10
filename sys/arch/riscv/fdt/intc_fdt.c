@@ -264,6 +264,7 @@ intc_intr_handler(struct trapframe *tf, register_t epc, register_t status,
 	int ipl;
 
 	KASSERT(CAUSE_INTERRUPT_P(cause));
+	//KASSERT(csr_sstatus_read() & SR_SIE);
 
 	struct intc_fdt_softc * const sc = intc_sc;
 
@@ -273,8 +274,9 @@ intc_intr_handler(struct trapframe *tf, register_t epc, register_t status,
 	while (ppl < (ipl = splintr(&pending))) {
 		if (pending == 0)
 			continue;
-
+		//KASSERT(csr_sstatus_read() & SR_SIE);
 		splx(ipl);
+		//KASSERT(csr_sstatus_read() & SR_SIE);
 
 		int source = ffs(pending) - 1;
 		struct intc_irq *irq = sc->sc_irq[source];
@@ -309,8 +311,10 @@ intc_intr_handler(struct trapframe *tf, register_t epc, register_t status,
 		}
 		splhigh();
 	}
+	//KASSERT(csr_sstatus_read() & SR_SIE);
 	ci->ci_intr_depth--;
 	splx(ppl);
+	//KASSERT(csr_sstatus_read() & SR_SIE);
 }
 
 
