@@ -557,7 +557,7 @@ pmap_pdetab_alloc(struct pmap *pmap)
 	UVMHIST_CALLARGS(pmapxtabhist, "pm %#jx", (uintptr_t)pmap, 0, 0, 0);
 
 	pmap_pdetab_t *ptb;
-#ifdef KERNHIST
+#ifdef UVMHIST
 	bool found_on_freelist = false;
 #endif
 
@@ -573,7 +573,7 @@ pmap_pdetab_alloc(struct pmap *pmap)
 
 		PDETAB_ADD(nget, 1);
 		ptb->pde_next = NULL;
-#ifdef KERNHIST
+#ifdef UVMHIST
 		found_on_freelist = true;
 #endif
 	}
