@@ -44,6 +44,8 @@ __RCSID("$NetBSD: autoconf.c,v 1.4 2023/05/07 12:41:48 skrll Exp $");
 
 #include <machine/sysreg.h>
 
+#include <dev/fdt/fdt_boot.h>
+
 //XXXNH
 extern struct cfdata cfdata[];
 
@@ -76,6 +78,10 @@ cpu_rootconf(void)
 }
 
 void
-device_register(device_t dv, void *aux)
+device_register(device_t self, void *aux)
 {
+
+	if (device_is_a(self, "mainbus")) {
+		fdt_setup_initrd();
+	}
 }
