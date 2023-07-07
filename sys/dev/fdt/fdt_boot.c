@@ -88,6 +88,11 @@ __KERNEL_RCSID(0, "$NetBSD: fdt_boot.c,v 1.1 2023/04/22 09:53:45 skrll Exp $");
 #include <dev/fdt/fdt_ddb.h>
 #endif
 
+#ifndef FDT_MAX_BOOT_STRING
+#define	FDT_MAX_BOOT_STRING	1024
+#endif
+static char bootargs[FDT_MAX_BOOT_STRING] = "";
+
 #ifdef EFI_RUNTIME
 #include <machine/efirt.h>
 
@@ -185,6 +190,16 @@ fdt_unmap_range(void *ptr, uint64_t size)
 	pmap_update(pmap_kernel());
 
 	uvm_km_free(kernel_map, startva, sz, UVM_KMF_VAONLY);
+}
+
+char *
+fdt_get_bootargs(void)
+{
+	const int chosen = OF_finddevice("/chosen");
+
+	if (chosen >= 0)
+		OF_getprop(chosen, "bootargs", bootargs, sizeof(bootargs));
+	return bootargs;
 }
 
 void

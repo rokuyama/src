@@ -38,6 +38,8 @@
 void fdt_map_efi_runtime(const char *prop, enum cpu_efirt_mem_type type);
 #endif
 
+char *fdt_get_bootargs(void);
+
 void fdt_probe_initrd(void);
 void fdt_setup_initrd(void);
 void fdt_reserve_initrd(void);
