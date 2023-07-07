@@ -80,7 +80,7 @@ __KERNEL_RCSID(0, "$NetBSD: fdt_boot.c,v 1.1 2023/04/22 09:53:45 skrll Exp $");
 
 #include <libfdt.h>
 
-//#include <dev/fdt/fdt_memory.h>
+#include <dev/fdt/fdt_memory.h>
 
 #include <dev/fdt/fdtvar.h>
 #include <dev/fdt/fdt_boot.h>
@@ -188,12 +188,12 @@ fdt_unmap_range(void *ptr, uint64_t size)
 }
 
 void
-fdt_probe_initrd(uint64_t *pstart, uint64_t *pend)
+fdt_probe_initrd(void)
 {
-	*pstart = *pend = 0;
 
 #ifdef MEMORY_DISK_DYNAMIC
-	fdt_probe_range("linux,initrd-start", "linux,initrd-end", pstart, pend);
+	fdt_probe_range("linux,initrd-start", "linux,initrd-end",
+	    &initrd_start, &initrd_end);
 #endif
 }
 
@@ -213,11 +213,23 @@ fdt_setup_initrd(void)
 }
 
 void
-fdt_probe_rndseed(uint64_t *pstart, uint64_t *pend)
+fdt_reserve_initrd(void)
+{
+#ifdef MEMORY_DISK_DYNAMIC
+	const uint64_t initrd_size =
+	    round_page(initrd_end) - trunc_page(initrd_start);
+
+	if (initrd_size > 0)
+		fdt_memory_remove_range(trunc_page(initrd_start), initrd_size);
+#endif
+}
+
+void
+fdt_probe_rndseed(void)
 {
 
 	fdt_probe_range("netbsd,rndseed-start", "netbsd,rndseed-end",
-	    pstart, pend);
+	    &rndseed_start, &rndseed_end);
 }
 
 void
@@ -235,11 +247,22 @@ fdt_setup_rndseed(void)
 }
 
 void
-fdt_probe_efirng(uint64_t *pstart, uint64_t *pend)
+fdt_reserve_rndseed(void)
+{
+	const uint64_t rndseed_size =
+	    round_page(rndseed_end) - trunc_page(rndseed_start);
+
+	if (rndseed_size > 0)
+		fdt_memory_remove_range(trunc_page(rndseed_start),
+		    rndseed_size);
+}
+
+void
+fdt_probe_efirng(void)
 {
 
 	fdt_probe_range("netbsd,efirng-start", "netbsd,efirng-end",
-	    pstart, pend);
+	    &efirng_start, &efirng_end);
 }
 
 void
@@ -294,6 +317,16 @@ fdt_setup_efirng(void)
 
 	explicit_memset(efirng, 0, efirng_size);
 	fdt_unmap_range(efirng, efirng_size);
+}
+
+void
+fdt_reserve_efirng(void)
+{
+	const uint64_t efirng_size =
+	    round_page(efirng_end) - trunc_page(efirng_start);
+
+	if (efirng_size > 0)
+		fdt_memory_remove_range(trunc_page(efirng_start), efirng_size);
 }
 
 #ifdef EFI_RUNTIME

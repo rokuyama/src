@@ -35,7 +35,6 @@ __KERNEL_RCSID(0, "$NetBSD: fdt_machdep.c,v 1.103 2023/04/22 09:53:45 skrll Exp 
 #include "opt_ddb.h"
 #include "opt_efi.h"
 #include "opt_machdep.h"
-#include "opt_md.h"
 #include "opt_multiprocessor.h"
 
 #include "genfb.h"
@@ -65,8 +64,6 @@ __KERNEL_RCSID(0, "$NetBSD: fdt_machdep.c,v 1.103 2023/04/22 09:53:45 skrll Exp 
 #include <sys/proc.h>
 #include <sys/pserialize.h>
 #include <sys/reboot.h>
-#include <sys/rnd.h>
-#include <sys/rndsource.h>
 #include <sys/systm.h>
 #include <sys/termios.h>
 #include <sys/vnode.h>
@@ -79,7 +76,6 @@ __KERNEL_RCSID(0, "$NetBSD: fdt_machdep.c,v 1.103 2023/04/22 09:53:45 skrll Exp 
 #include <uvm/uvm_extern.h>
 
 #include <machine/db_machdep.h>
-#include <machine/efirt.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_extern.h>
 
@@ -114,10 +110,6 @@ __KERNEL_RCSID(0, "$NetBSD: fdt_machdep.c,v 1.103 2023/04/22 09:53:45 skrll Exp 
 #include <dev/wscons/wsdisplayvar.h>
 #endif
 
-#ifdef MEMORY_DISK_DYNAMIC
-#include <dev/md.h>
-#endif
-
 #ifndef FDT_MAX_BOOT_STRING
 #define FDT_MAX_BOOT_STRING 1024
 #endif
@@ -129,10 +121,6 @@ char *boot_args = NULL;
 /* filled in before cleaning bss. keep in .data */
 u_long uboot_args[4] __attribute__((__section__(".data")));
 const uint8_t *fdt_addr_r __attribute__((__section__(".data")));
-
-static uint64_t initrd_start, initrd_end;
-static uint64_t rndseed_start, rndseed_end; /* our on-disk seed */
-static uint64_t efirng_start, efirng_end;   /* firmware's EFI RNG output */
 
 #include <libfdt.h>
 #include <dev/fdt/fdtvar.h>
@@ -242,21 +230,10 @@ fdt_build_bootconfig(uint64_t mem_start, uint64_t mem_end)
 	uint64_t addr, size;
 	int index;
 
-	const uint64_t initrd_size =
-	    round_page(initrd_end) - trunc_page(initrd_start);
-	if (initrd_size > 0)
-		fdt_memory_remove_range(trunc_page(initrd_start), initrd_size);
-
-	const uint64_t rndseed_size =
-	    round_page(rndseed_end) - trunc_page(rndseed_start);
-	if (rndseed_size > 0)
-		fdt_memory_remove_range(trunc_page(rndseed_start),
-		    rndseed_size);
-
-	const uint64_t efirng_size =
-	    round_page(efirng_end) - trunc_page(efirng_start);
-	if (efirng_size > 0)
-		fdt_memory_remove_range(trunc_page(efirng_start), efirng_size);
+	/* Reserve pages for ramdisk, rndseed, and firmware's RNG */
+	fdt_reserve_initrd();
+	fdt_reserve_rndseed();
+	fdt_reserve_efirng();
 
 	const int framebuffer = OF_finddevice("/chosen/framebuffer");
 	if (framebuffer >= 0) {
@@ -389,11 +366,11 @@ initarm(void *arg)
 	    PRIx64 ")\n", __func__, memory_start, memory_end, memory_size);
 
 	/* Parse ramdisk info */
-	fdt_probe_initrd(&initrd_start, &initrd_end);
+	fdt_probe_initrd();
 
 	/* Parse our on-disk rndseed and the firmware's RNG from EFI */
-	fdt_probe_rndseed(&rndseed_start, &rndseed_end);
-	fdt_probe_efirng(&efirng_start, &efirng_end);
+	fdt_probe_rndseed();
+	fdt_probe_efirng();
 
 	fdt_memory_remove_reserved(memory_start, memory_end);
 

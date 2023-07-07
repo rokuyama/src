@@ -38,12 +38,15 @@
 void fdt_map_efi_runtime(const char *prop, enum cpu_efirt_mem_type type);
 #endif
 
-void fdt_probe_initrd(uint64_t *, uint64_t *);
+void fdt_probe_initrd(void);
 void fdt_setup_initrd(void);
-void fdt_probe_rndseed(uint64_t *, uint64_t *);
+void fdt_reserve_initrd(void);
+void fdt_probe_rndseed(void);
 void fdt_setup_rndseed(void);
-void fdt_probe_efirng(uint64_t *, uint64_t *);
+void fdt_reserve_rndseed(void);
+void fdt_probe_efirng(void);
 void fdt_setup_efirng(void);
+void fdt_reserve_efirng(void);
 
 void fdt_update_stdout_path(void *, const char *);
 
