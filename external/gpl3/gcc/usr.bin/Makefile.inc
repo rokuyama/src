@@ -88,6 +88,8 @@ CFLAGS+=	-Wno-format-diag
 .if ${GCC_MACHINE_ARCH} == "m68000" || ${GCC_MACHINE_ARCH} == "m68k" || \
 	${GCC_MACHINE_ARCH} == "coldfire"
 COPTS.c-omp.cc+=-fno-jump-tables
+COPTS.generic-match.cc+=-fno-jump-tables
+COPTS.gimple-match.cc+=-fno-jump-tables
 .endif
 
 .endif
