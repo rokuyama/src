@@ -1009,7 +1009,7 @@ pf_normalize_ip(struct mbuf **m0, int dir, struct pfi_kif *kif, u_short *reason,
 			goto drop;
 		}
 
-		if (dir == PF_IN)
+		if (dir == PF_IN) {
 #ifdef __NetBSD__
 			pf_mtag = pf_find_mtag(m);
 			KASSERT(pf_mtag != NULL);
@@ -1018,6 +1018,7 @@ pf_normalize_ip(struct mbuf **m0, int dir, struct pfi_kif *kif, u_short *reason,
 #else
 			m->m_pkthdr.pf.flags |= PF_TAG_FRAGCACHE;
 #endif /* !__NetBSD__ */
+		}
 
 		if (frag != NULL && (frag->fr_flags & PFFRAG_DROP))
 			goto drop;
