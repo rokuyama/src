@@ -210,6 +210,9 @@ lgammal
 lgammal_r
 llrint
 llrintf
+llround
+llroundf
+llroundl
 log
 log10
 log10f
@@ -229,6 +232,7 @@ lrint
 lrintf
 lround
 lroundf
+lroundl
 modfl
 nan
 nanf

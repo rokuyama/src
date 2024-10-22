@@ -1,3 +1,4 @@
+/*	$NetBSD$	*/
 /*-
  * Copyright (c) 2003, Steven G. Kargl
  * All rights reserved.
@@ -26,7 +27,7 @@
 
 #include <sys/cdefs.h>
 #if defined(LIBM_SCCS) && !defined(lint)
-__RCSID("$NetBSD: n_roundf.c,v 1.1 2006/01/17 13:16:08 is Exp $");
+__RCSID("$NetBSD: n_lroundf.c,v 1.1 2010/12/09 22:52:59 abs Exp $");
 #if 0
 __FBSDID("$FreeBSD: src/lib/msun/src/s_roundf.c,v 1.1 2004/06/07 08:05:36 das Exp $");
 #endif
@@ -34,18 +35,25 @@ __FBSDID("$FreeBSD: src/lib/msun/src/s_roundf.c,v 1.1 2004/06/07 08:05:36 das Ex
 
 #include <math.h>
 
-float
-roundf(float x)
+#ifndef stype
+#define	stype	float
+#define	dtype	float
+#define	ceilit	ceilf
+#define	fn	roundf
+#endif
+
+dtype
+fn(stype x)
 {
-	float t;
+	dtype t;
 
 	if (x >= 0.0) {
-		t = ceilf(x);
+		t = ceilit(x);
 		if (t - x > 0.5)
 			t -= 1.0;
 		return (t);
 	} else {
-		t = ceilf(-x);
+		t = ceilit(-x);
 		if (t + x > 0.5)
 			t -= 1.0;
 		return (-t);

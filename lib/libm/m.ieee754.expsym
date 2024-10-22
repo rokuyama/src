@@ -133,11 +133,7 @@ jnf
 lgammaf
 lgammaf_r
 llrintl
-llround
-llroundf
-llroundl
 lrintl
-lroundl
 matherr
 modf
 modff
