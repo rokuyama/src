@@ -17,6 +17,3 @@ fegetexcept
 feholdexcept
 fesetenv
 feupdateenv
-fma
-fmaf
-fmal

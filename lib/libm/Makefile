@@ -86,13 +86,11 @@ COMMON_SRCS+= fenv.c
 .endif
 COMMON_SRCS+= s_nexttoward.c s_rintl.c
 COMMON_SRCS+= e_sqrtl.c
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 
 .elif (${LIBC_MACHINE_ARCH} == "alpha")
 .PATH: ${.CURDIR}/arch/alpha
 ARCH_SRCS = s_copysign.S s_copysignf.S lrint.S
 COMMON_SRCS+= fenv.c
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 COPTS+=	-mfloat-ieee -mieee-with-inexact -mfp-trap-mode=sui -mtrap-precision=i
 
 # alpha doesn't have symbols for:
@@ -119,7 +117,6 @@ EXPSYM_SRC_MD=	m.armhf.expsym
 .for f in fenv.c lrint.S lrintf.S s_fabsf.S s_fma.S s_fmaf.S
 COPTS.$f +=	-mfpu=vfp
 .endfor
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 .if (${MKSOFTFLOAT} == "no")
 .PATH.S: ${.CURDIR}/arch/arm
 ARCH_SRCS = e_sqrt.S e_sqrtf.S lrint.S lrintf.S s_fabsf.S s_fma.S s_fmaf.S
@@ -136,7 +133,6 @@ COMMON_SRCS+= fenv.c
 .elif (${LIBC_MACHINE_ARCH} == "sparc")
 .PATH: ${.CURDIR}/arch/sparc
 COMMON_SRCS+= fenv.c
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 
 .elif (${LIBC_MACHINE_ARCH} == "sparc64")
 .PATH: ${.CURDIR}/arch/sparc64
@@ -145,7 +141,6 @@ COMMON_SRCS+= s_rintl.c
 .ifndef _COMPAT_M32_MK_
 COMMON_SRCS+= s_nexttoward.c
 .endif
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 
 .elif ((${MACHINE_ARCH} == "i386") || (${MACHINE_ARCH} == "x86_64"))
 
@@ -156,7 +151,6 @@ COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 .PATH:	${.CURDIR}/arch/i387
 
 COMMON_SRCS+= fenv.c s_nexttoward.c s_rintl.c
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 
 ARCH_SRCS = e_acos.S e_asin.S e_atan2.S e_exp.S e_expf.S e_fmod.S e_log.S \
 	    e_logf.S e_log10.S e_log10f.S e_log2.S e_log2f.S e_remainder.S \
@@ -198,7 +192,6 @@ ARCH_SRCS = e_acos.S e_asin.S e_atanh.S e_cosh.S e_exp.S e_fmod.S e_log.S \
 	    s_log1p.S s_logb.S s_rint.S s_scalbn.S s_sin.S s_tan.S s_tanh.S
 COMMON_SRCS += fenv.c s_nexttoward.c s_rintl.c
 .endif
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 # end of m68k
 
 .elif (${LIBC_MACHINE_ARCH} == "vax")
@@ -236,7 +229,6 @@ ARCH_SRCS += s_fmin.S s_fminf.S
 .if ${MKSOFTFLOAT} == "no"
 COMMON_SRCS += fenv.c
 .endif
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 ARCH_SRCS += s_fma.S s_fmaf.S
 
 .elif (${LIBC_MACHINE_CPU} == "mips")
@@ -248,7 +240,6 @@ COMMON_SRCS += fenv.c
 COMMON_SRCS+= s_nexttoward.c
 COMMON_SRCS+= s_rintl.c
 .endif
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 
 .  if ${MKSOFTFLOAT} == "no"
 .    if ${MACHINE_MIPS64} && (!defined(CPUFLAGS) || empty(CPUFLAGS:M-mabi=32))
@@ -269,7 +260,6 @@ EXPSYM_SRC_MD=	m.mips.expsym
 .if ${MKSOFTFLOAT} == "no"
 COMMON_SRCS += fenv.c
 .endif
-COMMON_SRCS+= s_fma.c s_fmaf.c s_fmal.c
 .endif
 # End of list of CPU tests
 
@@ -357,6 +347,7 @@ COMMON_SRCS+= b_exp.c b_log.c \
 	s_fabsf.c s_fabsl.c \
 	s_finite.c s_finitef.c \
 	s_floor.c s_floorf.c s_floorl.c s_frexpf.c \
+	s_fma.c s_fmaf.c s_fmal.c \
 	s_ilogb.c s_ilogbf.c s_ilogbl.c \
 	s_isinff.c s_isnanf.c s_lib_version.c s_log1p.c \
 	s_llrint.c s_llrintf.c s_llrintl.c \

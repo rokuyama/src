@@ -7,6 +7,3 @@ __fe_dfl_env
 __multc3
 _fini
 _init
-fma
-fmaf
-fmal

@@ -30,7 +30,4 @@ __mulxc3
 _fini
 _init
 fabsl
-fma
-fmaf
-fmal
 imprecise_tgammal

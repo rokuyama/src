@@ -121,6 +121,9 @@ fabsf
 fdim
 fdimf
 fdiml
+fma
+fmaf
+fmal
 fminl
 frexp
 gamma_r

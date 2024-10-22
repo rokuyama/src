@@ -23,6 +23,3 @@ __mulxc3
 _fini
 _init
 fabsl
-fma
-fmaf
-fmal
