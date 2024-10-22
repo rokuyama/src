@@ -1444,6 +1444,10 @@ COPTS.u_atomic.c+=	${${ACTIVE_CC} == "gcc" && ${HAVE_GCC:U0} >= 10:? -Wno-builti
 .if ${MACHINE} == "vax"
 COPTS.sp_quad_depth_test.c+=	-O0
 COPTS.u_format_table.c+=	-O0
+.  if ${HAVE_GCC:U0} == 10
+COPTS.nir_builtin_builder.c+=	-O0
+COPTS.nir_lower_int64.c+=	-O0
+.  endif
 .endif
 
 .if ${MACHINE_CPU} == "m68k" && ${HAVE_GCC:U0} == 12
