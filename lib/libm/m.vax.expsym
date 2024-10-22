@@ -11,5 +11,8 @@ _powf
 d_cbrt
 d_sqrt
 dcbrt_
+fma
+fmaf
+fmal
 infnan
 z_abs

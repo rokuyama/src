@@ -403,6 +403,8 @@ NOIEEE_SRCS = n_asincos.c n_acosh.c n_asinh.c n_atan.c n_atanh.c n_atanhf.c \
 	n_fmax.c n_fmaxf.c n_fmin.c n_fminf.c
 #	n_sqrt.c n_argred.c n_infnan.c n_atan2.c n_cabs.c n_cbrt.c n_support.c
 
+# XXX dummy
+NOIEEE_SRCS += n_fma.c n_fmaf.c
 
 # NetBSD's C library supplies these functions:
 #COMMON_SRCS+=	s_fabs.c s_frexp.c s_isinf.c s_isnan.c s_ldexp.c s_modf.c
